@@ -1,0 +1,55 @@
+.main {
+    background-color: #f8f9fa;
+}
+.stApp {
+    max-width: 100%;
+    margin: 0 auto;
+}
+.card {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+.stat-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+.stat-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    padding: 15px;
+    width: 48%;
+    text-align: center;
+}
+.stat-value {
+    font-size: 24px;
+    font-weight: bold;
+    color: #1e88e5;
+}
+.stat-label {
+    font-size: 14px;
+    color: #757575;
+}
+.graph-container {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    margin-bottom: 20px;
+    height: 750px;
+}
+.sidebar .stButton>button {
+    width: 100%;
+    background-color: #1e88e5;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 0;
+}
+.sidebar .stButton>button:hover {
+    background-color: #1565c0;
+}

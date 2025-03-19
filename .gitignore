@@ -1,0 +1,26 @@
+# Python
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+*.so
+dist/
+build/
+*.egg-info/
+lib/
+lib64/
+bin/
+include/
+
+# IDE and System
+.idea/
+.vscode/
+.DS_Store
+
+# Environment
+.env
+
+# Project specific
+hierarchical_plan.md
+*.log
+
