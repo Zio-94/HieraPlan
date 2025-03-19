@@ -4,6 +4,8 @@ A sophisticated planning system that generates detailed, hierarchical task plans
 
 ## Overview
 
+![HieraPlan Overview](overview.png)
+
 Hierarchical Task Planner is a powerful tool designed to transform high-level requests into detailed, executable plans. By leveraging the reasoning capabilities of Large Language Models (LLMs) and the structured approach of Hierarchical Task Network (HTN) algorithms, this system provides quantitative task decomposition with complexity-based weighting.
 
 ### Key Features
@@ -29,8 +31,8 @@ Hierarchical Task Planner is a powerful tool designed to transform high-level re
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/hierarchical-task-planner.git
-cd hierarchical-task-planner
+git clone https://github.com/Zio-94/HieraPlan.git
+cd HieraPlan
 ```
 
 2. Create and activate a virtual environment:
