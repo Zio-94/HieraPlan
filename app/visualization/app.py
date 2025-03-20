@@ -4,6 +4,7 @@ import os
 import json
 import pandas as pd
 import numpy as np
+import time
 import tempfile
 import sys
 
@@ -31,21 +32,21 @@ def add_custom_css():
 
 def show_example_buttons():
     st.write("### 🎯 Try these example request:")
-
-    # Add some space and a divider
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # Create three columns for the example buttons
     cols = st.columns(3)
 
     for col, (title, prompt) in zip(cols, EXAMPLE_PROMPTS.items()):
         with col:
             st.markdown(
                 f"""
-                <div style='text-align: center; padding: 20px; min-height: 190px; background-color: #242424;
-                border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); height: 100%; margin-bottom: 20px'>
-                <h4>{title}</h4>
-                <p style='font-size: 0.9em; color: #666; margin-bottom: 15px;'>
+                <div style='text-align: center; padding: 20px; min-height: 190px;
+                background-color: rgba(66, 99, 235, 0.1);
+                border: 1px solid rgba(66, 99, 235, 0.2);
+                border-radius: 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+                height: 100%; min-height: 210px; margin-bottom: 20px'>
+                <h4 style='color: #4263eb; margin-bottom: 15px;'>{title}</h4>
+                <p style='font-size: 0.9em; color: #666666; margin-bottom: 15px;'>
                 {prompt[:100]}...</p>
                 </div>
                 """,
@@ -123,10 +124,14 @@ def main():
         example_container.empty()
         st.session_state.plan_generated = True
 
+        # Create containers for temporary messages
+        warning_container = st.empty()
+        success_container = st.empty()
+
         # Add estimated time warning based on depth
         if max_depth >= 2:
             processing_time = "1-2 minutes" if max_depth == 2 else "2-3 minutes"
-            st.warning(
+            warning_container.warning(
                 f"""⏳ Detailed Planning in Progress
 
                 You've selected depth level {max_depth}, which enables more comprehensive task breakdown.
@@ -157,18 +162,23 @@ def main():
             plan = planning_system.process_request(request)
 
             # Display success message with additional info
-            st.success(
+            success_container.success(
                 """✨ Plan generated successfully!
 
-            Your plan has been created with:
-            - Depth Level: {max_depth}
-            - Complexity Threshold: {weight_threshold}%
+                Your plan has been created with:
+                - Depth Level: {max_depth}
+                - Complexity Threshold: {weight_threshold}%
 
-            Explore the visualization and details in the tabs below.
-            """.format(
+                Explore the visualization and details in the tabs below.
+                """.format(
                     max_depth=max_depth, weight_threshold=weight_threshold
                 )
             )
+
+            # Clear the temporary messages after 2 seconds
+            time.sleep(2)
+            warning_container.empty()
+            success_container.empty()
 
             # Create tabs for different views
             tab1, tab2 = st.tabs(["📝 Plan Details", "📈 Interactive Visualization"])
