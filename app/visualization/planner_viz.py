@@ -81,7 +81,7 @@ class PlanVisualizer:
         details = (
             f"Task Description:\n"
             f"{node.description}\n\n"
-            f"Complexity: {node.weight:.0f}%"
+            f"Difficulty: {node.weight:.0f}%"
         )
 
         return {

@@ -1,7 +1,7 @@
 import json
 import logging
-from ..core.interfaces import PlanningStrategy
-from ..core.models import Plan, PlanNode
+from app.core.interfaces import PlanningStrategy
+from app.core.models import Plan, PlanNode
 
 logger = logging.getLogger(__name__)
 
@@ -45,30 +45,55 @@ class PlanningSystem:
         """Generate markdown representation of the plan"""
         md = f"# Hierarchical Plan for: {plan.request}\n\n"
 
+        def _generate_complexity_bar(weight: float) -> str:
+            """Generate a visual complexity indicator"""
+            level = int(weight / 10)
+
+            # Determine difficulty level and emoji
+            if level <= 2:
+                return "  (Easy 🌱)"
+            elif level <= 4:
+                return "  (Moderate 🌟)"
+            elif level <= 7:
+                return "  (Challenging 🔥)"
+            else:
+                return "  (Intense 🚀)"
+
         def _add_node_to_md(node: PlanNode, depth: int, parent_num: str = "") -> str:
             node_md = ""
 
             if depth == 0:
                 # Skip root node
                 for i, child in enumerate(node.children, 1):
-                    node_md += _add_node_to_md(child, depth + 1, str(i))
+                    # Top-level nodes use h2 heading
+                    node_md += f"### **{i}. {child.description}** {_generate_complexity_bar(child.weight)}\n\n"
+
+                    # Add children with proper numbering
+                    if child.children:
+                        for j, grandchild in enumerate(child.children, 1):
+                            child_num = f"{i}.{j}"
+                            node_md += (
+                                f"- [ ] **{child_num}. {grandchild.description}**\n"
+                            )
+                            node_md += (
+                                f"  {_generate_complexity_bar(grandchild.weight)}\n"
+                            )
+
+                            # Add third level children if they exist
+                            if grandchild.children:
+                                for k, great_grandchild in enumerate(
+                                    grandchild.children, 1
+                                ):
+                                    grand_child_num = f"{i}.{j}.{k}"
+                                    node_md += f"    - [ ] **{grand_child_num}. {great_grandchild.description}**\n"
+                                    node_md += f"        {_generate_complexity_bar(great_grandchild.weight)}\n"
+
+                            node_md += "\n"
+
+                    # Add horizontal line between top-level tasks
+                    if i < len(node.children):
+                        node_md += "---\n\n"
                 return node_md
-
-            # Create indentation
-            indent = "    " * (depth - 1)
-
-            # Create step number and bullet point
-            step_num = f"{parent_num}. " if parent_num else ""
-
-            # Add current node with indentation
-            node_md += (
-                f"{indent}- {step_num}{node.description} (Complexity: {node.weight}%)\n"
-            )
-
-            # Add children with proper numbering
-            for i, child in enumerate(node.children, 1):
-                child_num = f"{parent_num}.{i}" if parent_num else str(i)
-                node_md += _add_node_to_md(child, depth + 1, child_num)
 
             return node_md
 

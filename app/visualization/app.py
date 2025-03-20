@@ -30,7 +30,7 @@ def add_custom_css():
 
 
 def show_example_buttons():
-    st.write("### 🎯 Try these example prompts:")
+    st.write("### 🎯 Try these example request:")
 
     # Add some space and a divider
     st.markdown("<br>", unsafe_allow_html=True)
@@ -60,14 +60,14 @@ def show_example_buttons():
 
 def main():
     st.set_page_config(
-        page_title="Modern HTN Planner",
+        page_title="HieraPlan",
         page_icon="🧠",
         layout="wide",
         initial_sidebar_state="expanded",
     )
 
     add_custom_css()
-    st.title("📊 HTN Planner Visualization")
+    st.title("📊 HieraPlan Visualization")
 
     # Initialize session state
     if "request" not in st.session_state:
@@ -89,42 +89,103 @@ def main():
         st.header("Planning Parameters")
 
         with st.container():
-            # Use session state for the text area
             request = st.text_area(
                 "Enter your planning request:",
                 value=st.session_state.request,
-                height=120,
+                height=420,
                 key="request_input",
             )
 
-            col1, col2 = st.columns(2)
-            with col1:
-                weight_threshold = st.slider("Weight Threshold", 1, 100, 70)
-            with col2:
-                max_depth = st.slider("Max Depth", 1, 5, 2)
+            # Combine difficulty and depth into one control
+            breakdown_options = {
+                "Basic Plan 🌱": {"depth": 1, "threshold": 90},
+                "Standard Plan 🌟": {"depth": 2, "threshold": 70},
+                "Detailed Plan 🔥": {"depth": 2, "threshold": 50},
+                "Complete Plan 🚀": {"depth": 3, "threshold": 30},
+            }
+
+            selected_breakdown = st.selectbox(
+                "Plan Detail Level",
+                options=list(breakdown_options.keys()),
+                index=2,
+                help="Choose how detailed you want your plan to be. Higher levels will break down tasks into more steps.",
+            )
+
+            # Get the selected configuration
+            config = breakdown_options[selected_breakdown]
+            max_depth = config["depth"]
+            weight_threshold = config["threshold"]
 
             generate_button = st.button("Generate Plan 🚀", use_container_width=True)
 
     # Move the plan generation logic outside the if-else block
     if generate_button and request:
-        # Clear the example buttons container
         example_container.empty()
         st.session_state.plan_generated = True
 
-        with st.spinner("Generating plan...it may take a few seconds..."):
+        # Add estimated time warning based on depth
+        if max_depth >= 2:
+            processing_time = "1-2 minutes" if max_depth == 2 else "2-3 minutes"
+            st.warning(
+                f"""⏳ Detailed Planning in Progress
+
+                You've selected depth level {max_depth}, which enables more comprehensive task breakdown.
+                Estimated processing time: {processing_time}
+
+                This allows our AI to:
+                • Analyze tasks more thoroughly
+                • Create more detailed subtasks
+                • Ensure better task organization
+
+                Feel free to grab a coffee while we craft your plan! ☕️
+                """
+            )
+
+        with st.spinner(
+            """Generating your plan... Please wait.
+
+            🔍 Steps being performed:
+            1. Analyzing your request
+            2. Creating initial plan structure
+            3. Decomposing complex tasks
+            4. Calculating task complexities
+            """
+        ):
             # Normal API flow
-            llm_client = OpenAILLMClient()
+            # OpenAI API 키를 환경변수에서 가져오도록 수정
+            llm_client = OpenAILLMClient(
+                api_key=st.secrets["OPENAI_API_KEY"]  # .env 파일 대신 Streamlit secrets 사용
+            )
             strategy = HTNPlanningStrategy(llm_client, weight_threshold, max_depth)
             planning_system = PlanningSystem(strategy)
             plan = planning_system.process_request(request)
 
-            # Display success message
-            st.success("Plan generated successfully!")
+            # Display success message with additional info
+            st.success(
+                """✨ Plan generated successfully!
+
+            Your plan has been created with:
+            - Depth Level: {max_depth}
+            - Complexity Threshold: {weight_threshold}%
+
+            Explore the visualization and details in the tabs below.
+            """.format(
+                    max_depth=max_depth, weight_threshold=weight_threshold
+                )
+            )
 
             # Create tabs for different views
-            tab1, tab2 = st.tabs(["📈 Interactive Visualization", "📝 Plan Details"])
+            tab1, tab2 = st.tabs(["📝 Plan Details", "📈 Interactive Visualization"])
 
             with tab1:
+                # Display statistics and markdown in rows
+                display_plan_statistics(
+                    plan.to_dict(), weight_threshold
+                )  # weight_threshold 전달
+                st.markdown("---")
+                display_plan_markdown(plan, planning_system)
+
+            with tab2:
                 st.subheader("Interactive Plan Visualization")
                 st.markdown(
                     "Interact with the visualization: zoom, drag, and hover over nodes for task description."
@@ -145,13 +206,6 @@ def main():
                 # 임시 파일 삭제
                 os.remove(html_path)
 
-            with tab2:
-                # Display statistics and markdown in rows
-                display_plan_statistics(plan.to_dict(), weight_threshold)  # weight_threshold 전달
-                st.markdown("---")
-                display_plan_markdown(plan, planning_system)
-
-                    
     else:
 
         st.info("Enter your planning request and click 'Generate Plan' to start.")
@@ -163,7 +217,7 @@ def main():
 
 def display_plan_statistics(plan_dict, weight_threshold):
     node_dict = plan_dict["plan"]
-    
+
     # 먼저 노드 계산을 수행
     def count_nodes(node_dict):
         count = 1
@@ -185,6 +239,7 @@ def display_plan_statistics(plan_dict, weight_threshold):
 
     # 가중치 수집
     weights = []
+
     def collect_weights(node_dict):
         weight = node_dict.get("weight")
         if weight is not None:
@@ -197,58 +252,83 @@ def display_plan_statistics(plan_dict, weight_threshold):
 
     # 이제 UI 표시
     col1, col2 = st.columns([1, 1])
-    
+
+    def get_difficulty_label(weight: float) -> str:
+        """Convert weight to user-friendly difficulty label"""
+        if weight <= 20:
+            return "Easy 🌱"
+        elif weight <= 40:
+            return "Moderate 🌟"
+        elif weight <= 70:
+            return "Challenging 🔥"
+        else:
+            return "Intense 🚀"
+
     with col1:
         st.subheader("Plan Statistics")
         metric_cols = st.columns(2)
         with metric_cols[0]:
             st.metric("Total Steps", total_nodes)
         with metric_cols[1]:
-            st.metric("Average Complexity", f"{avg_weight:.1f}%")
+            st.metric(
+                "Average Difficulty",
+                f"{avg_weight:.1f}% ({get_difficulty_label(avg_weight)})",
+            )
 
         metric_cols = st.columns(2)
         with metric_cols[0]:
-            st.metric("Max Depth", max_plan_depth - 1)
+            # Find the highest difficulty task
+            max_weight = max(weights) if weights else 0
+            st.metric(
+                "Hardest Task",
+                f"{max_weight:.1f}% ({get_difficulty_label(max_weight)})",
+            )
         with metric_cols[1]:
-            st.metric("Weight Threshold", f"{weight_threshold}%")
+            # Calculate percentage of challenging or higher tasks
+            high_difficulty_count = sum(1 for w in weights if w > 60)
+            high_difficulty_percent = (
+                (high_difficulty_count / len(weights) * 100) if weights else 0
+            )
+            st.metric(
+                "Complex Tasks",
+                f"{high_difficulty_percent:.1f}%",
+                help="Percentage of tasks rated as Challenging or higher",
+            )
 
     with col2:
         if weights:
-            st.subheader("Complexity Distribution")
-            bins = [0, 20, 40, 60, 80, 100]
+            st.subheader("Difficulty Distribution")
+            bins = [0, 30, 60, 80, 100]
             labels = [
-                "Very Low (0-20%)", 
-                "Low (21-40%)", 
-                "Medium (41-60%)", 
-                "High (61-80%)", 
-                "Very High (81-100%)"
+                "Intense 🚀 (80-100%)",
+                "Challenging 🔥 (61-80%)",
+                "Moderate 🌟 (31-60%)",
+                "Easy 🌱 (0-30%)",
             ]
-            
+
             hist_data = pd.DataFrame({"weight": weights})
             hist_data["complexity"] = pd.cut(
                 hist_data["weight"],
                 bins=bins,
-                labels=labels,
+                labels=labels[::-1],  # Reverse labels for correct ordering
                 include_lowest=True,
             )
-            
+
             complexity_counts = (
-                hist_data["complexity"]
-                .value_counts()
-                .reindex(labels, fill_value=0)
+                hist_data["complexity"].value_counts().reindex(labels, fill_value=0)
             )
-            
-            chart_data = pd.DataFrame({
-                "Complexity": complexity_counts.index,
-                "Count": complexity_counts.values,
-            })
-            
-            st.bar_chart(
-                chart_data.set_index("Complexity"),
-                height=300
+
+            chart_data = pd.DataFrame(
+                {
+                    "Complexity": complexity_counts.index,
+                    "Count": complexity_counts.values,
+                }
             )
+
+            st.bar_chart(chart_data.set_index("Complexity"), height=300)
         else:
-            st.warning("No complexity data available")
+            st.warning("No Difficulty data available")
+
 
 def display_plan_markdown(plan, planning_system):
     st.subheader("Plan in Markdown")

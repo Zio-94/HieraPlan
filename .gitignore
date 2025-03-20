@@ -19,8 +19,18 @@ include/
 
 # Environment
 .env
+.streamlit/secrets.toml
+
+# Streamlit
+.streamlit/
+streamlit_app.py
+streamlit_analytics.db
+.streamlit_cache/
+.streamlit_downloads/
 
 # Project specific
 hierarchical_plan.md
 *.log
+temp/
+generated_plans/
 

@@ -1,10 +1,12 @@
 .main {
     background-color: #f8f9fa;
 }
+
 .stApp {
     max-width: 100%;
     margin: 0 auto;
 }
+
 .card {
     background-color: white;
     border-radius: 10px;
@@ -12,11 +14,13 @@
     padding: 20px;
     margin-bottom: 20px;
 }
+
 .stat-container {
     display: flex;
     justify-content: space-between;
     margin-bottom: 20px;
 }
+
 .stat-card {
     background-color: white;
     border-radius: 8px;
@@ -25,15 +29,18 @@
     width: 48%;
     text-align: center;
 }
+
 .stat-value {
     font-size: 24px;
     font-weight: bold;
     color: #1e88e5;
 }
+
 .stat-label {
     font-size: 14px;
     color: #757575;
 }
+
 .graph-container {
     background-color: white;
     border-radius: 10px;
@@ -42,14 +49,23 @@
     margin-bottom: 20px;
     height: 750px;
 }
+
 .sidebar .stButton>button {
     width: 100%;
     background-color: #1e88e5;
-    color: white;
+    color: rgb(234, 234, 234);
     border: none;
     border-radius: 5px;
     padding: 10px 0;
 }
+
 .sidebar .stButton>button:hover {
     background-color: #1565c0;
+}
+
+/* Add styles for markdown headers */
+.element-container div[data-testid="stMarkdownContainer"] h3 {
+    margin-bottom: 10px;
+    margin-top: 10px;
+    color: rgb(234, 234, 234);
 }
