@@ -4,15 +4,21 @@
 
 A sophisticated planning system that generates detailed, hierarchical task plans using Large Language Models and Hierarchical Task Network (HTN) algorithms. All plans are exported in Markdown format, making them perfectly compatible with tools like Notion, Obsidian, and other markdown editors.
 
+<br>
+
 ## Overview
 
 <img src="docs/assets/overview.png" alt="HieraPlan Overview" width="800">
 
 Hierarchical Task Planner is a powerful tool designed to transform high-level requests into detailed, executable plans. By leveraging the reasoning capabilities of Large Language Models (LLMs) and the structured approach of Hierarchical Task Network (HTN) algorithms, this system provides quantitative task decomposition with complexity-based weighting.
 
+<br>
+
 ### Interactive Visualization
 
 <img src="docs/assets/visualization.png" alt="HieraPlan Visualization" width="600">
+
+<br>
 
 ### Key Features
 
@@ -26,12 +32,16 @@ Hierarchical Task Planner is a powerful tool designed to transform high-level re
 - **Batch Processing**: Optimizes LLM calls by processing multiple tasks simultaneously
 - **Multiple Export Formats**: Exports plans in Markdown, Text, or JSON formats
 
+<br>
+
 ## Installation
 
 ### Prerequisites
 
 - Python 3.8 or higher
 - OpenAI API key
+
+<br>
 
 ### Setup
 
@@ -51,6 +61,7 @@ source venv/bin/activate  # On Windows, use: venv\Scripts\activate
 ```bash
 pip install -r requirements.txt
 ```
+<br>
 
 ## Usage
 ### Command Line Interface
@@ -59,6 +70,7 @@ Run the planner from command line:
 ```bash
 python app/main.py
 ```
+<br>
 
 ### Interactive Visualization
 Launch the Streamlit interface for interactive planning and visualization:

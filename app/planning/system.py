@@ -50,11 +50,11 @@ class PlanningSystem:
             level = int(weight / 10)
 
             # Determine difficulty level and emoji
-            if level <= 2:
+            if level <= 3:
                 return "  (Easy 🌱)"
-            elif level <= 4:
+            elif level <= 6:
                 return "  (Moderate 🌟)"
-            elif level <= 7:
+            elif level <= 8:
                 return "  (Challenging 🔥)"
             else:
                 return "  (Intense 🚀)"

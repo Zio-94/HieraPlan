@@ -267,8 +267,8 @@ def display_plan_statistics(plan_dict, weight_threshold):
             st.metric("Total Steps", total_nodes)
         with metric_cols[1]:
             st.metric(
-                "Average Difficulty",
-                f"{avg_weight:.1f}% ({get_difficulty_label(avg_weight)})",
+                "Difficulty Score",
+                f"{avg_weight:.1f} ({get_difficulty_label(avg_weight)})",
             )
 
         metric_cols = st.columns(2)
@@ -276,8 +276,8 @@ def display_plan_statistics(plan_dict, weight_threshold):
             # Find the highest difficulty task
             max_weight = max(weights) if weights else 0
             st.metric(
-                "Hardest Task",
-                f"{max_weight:.1f}% ({get_difficulty_label(max_weight)})",
+                "Hardest Task Score",
+                f"{max_weight:.1f} ({get_difficulty_label(max_weight)})",
             )
         with metric_cols[1]:
             # Calculate percentage of challenging or higher tasks
