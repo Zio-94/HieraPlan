@@ -1,12 +1,18 @@
 # HieraPlan - Hierarchical Task Planner
 
-A sophisticated planning system that generates detailed, hierarchical task plans using Large Language Models and Hierarchical Task Network (HTN) algorithms.
+> 🚀 **[Try HieraPlan Demo](https://hieraplan.streamlit.app/)** - Generate your hierarchical task plan now!
+
+A sophisticated planning system that generates detailed, hierarchical task plans using Large Language Models and Hierarchical Task Network (HTN) algorithms. All plans are exported in Markdown format, making them perfectly compatible with tools like Notion, Obsidian, and other markdown editors.
 
 ## Overview
 
-![HieraPlan Overview](overview.png)
+<img src="docs/assets/overview.png" alt="HieraPlan Overview" width="800">
 
 Hierarchical Task Planner is a powerful tool designed to transform high-level requests into detailed, executable plans. By leveraging the reasoning capabilities of Large Language Models (LLMs) and the structured approach of Hierarchical Task Network (HTN) algorithms, this system provides quantitative task decomposition with complexity-based weighting.
+
+### Interactive Visualization
+
+<img src="docs/assets/visualization.png" alt="HieraPlan Visualization" width="600">
 
 ### Key Features
 

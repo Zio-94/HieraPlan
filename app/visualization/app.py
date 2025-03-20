@@ -151,11 +151,7 @@ def main():
             4. Calculating task complexities
             """
         ):
-            # Normal API flow
-            # OpenAI API 키를 환경변수에서 가져오도록 수정
-            llm_client = OpenAILLMClient(
-                api_key=st.secrets["OPENAI_API_KEY"]  # .env 파일 대신 Streamlit secrets 사용
-            )
+            llm_client = OpenAILLMClient(api_key=st.secrets["OPENAI_API_KEY"])
             strategy = HTNPlanningStrategy(llm_client, weight_threshold, max_depth)
             planning_system = PlanningSystem(strategy)
             plan = planning_system.process_request(request)
@@ -255,11 +251,11 @@ def display_plan_statistics(plan_dict, weight_threshold):
 
     def get_difficulty_label(weight: float) -> str:
         """Convert weight to user-friendly difficulty label"""
-        if weight <= 20:
+        if weight <= 30:
             return "Easy 🌱"
-        elif weight <= 40:
+        elif weight <= 60:
             return "Moderate 🌟"
-        elif weight <= 70:
+        elif weight <= 80:
             return "Challenging 🔥"
         else:
             return "Intense 🚀"
@@ -300,32 +296,29 @@ def display_plan_statistics(plan_dict, weight_threshold):
             st.subheader("Difficulty Distribution")
             bins = [0, 30, 60, 80, 100]
             labels = [
-                "Intense 🚀 (80-100%)",
-                "Challenging 🔥 (61-80%)",
-                "Moderate 🌟 (31-60%)",
-                "Easy 🌱 (0-30%)",
+                "1. 🌱",
+                "2. 🌟",
+                "3. 🔥",
+                "4. 🚀",
             ]
 
             hist_data = pd.DataFrame({"weight": weights})
             hist_data["complexity"] = pd.cut(
                 hist_data["weight"],
                 bins=bins,
-                labels=labels[::-1],  # Reverse labels for correct ordering
+                labels=labels,
                 include_lowest=True,
             )
 
-            complexity_counts = (
-                hist_data["complexity"].value_counts().reindex(labels, fill_value=0)
-            )
-
+            # Sort the data in the desired order
+            complexity_counts = hist_data["complexity"].value_counts(sort=False)
             chart_data = pd.DataFrame(
-                {
-                    "Complexity": complexity_counts.index,
-                    "Count": complexity_counts.values,
-                }
+                {"Count": [complexity_counts.get(label, 0) for label in labels]},
+                index=labels,
             )
 
-            st.bar_chart(chart_data.set_index("Complexity"), height=300)
+            # Display the chart
+            st.bar_chart(chart_data, height=300)
         else:
             st.warning("No Difficulty data available")
 
